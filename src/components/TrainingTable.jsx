@@ -1,4 +1,3 @@
-import React from 'react';
 import TrainingRow from './TrainingRow';
 
 const TrainingTable = ({ entries, onDelete, onEdit }) => {

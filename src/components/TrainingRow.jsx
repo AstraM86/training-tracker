@@ -1,5 +1,3 @@
-import React from 'react';
-
 const TrainingRow = ({ entry, onDelete, onEdit }) => {
     const { date, displayDate, distance } = entry;
 

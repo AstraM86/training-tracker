@@ -1,42 +1,35 @@
-// src/App.jsx
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import TrainingForm from './components/TrainingForm';
 import TrainingTable from './components/TrainingTable';
 
+const loadEntries = () => {
+    const saved = localStorage.getItem('trainingEntries');
+    if (saved) {
+        try {
+            return JSON.parse(saved);
+        } catch {
+            return [];
+        }
+    }
+    return [];
+};
+
 const App = () => {
-    const [entries, setEntries] = useState([]);
+    const [entries, setEntries] = useState(loadEntries);
     const [editingDate, setEditingDate] = useState(null);
 
-    // Загружаем данные из localStorage при монтировании
-    useEffect(() => {
-        const saved = localStorage.getItem('trainingEntries');
-        if (saved) {
-            try {
-                setEntries(JSON.parse(saved));
-            } catch (_) {
-                setEntries([]);
-            }
-        }
-    }, []);
-
-    // Сохраняем в localStorage при изменении
     useEffect(() => {
         localStorage.setItem('trainingEntries', JSON.stringify(entries));
     }, [entries]);
 
-    // Добавление / обновление записи
     const addOrUpdateEntry = (dateStr, distance) => {
-        // dateStr ожидается в формате ДД.ММ.ГГГГ
-        // Нормализуем для сравнения: преобразуем в YYYY-MM-DD
-        const parts = dateStr.split('.');
-        if (parts.length !== 3) return;
-        const normalized = `${parts[2]}-${parts[1]}-${parts[0]}`;
+        const [year, month, day] = dateStr.split('-');
+        const displayDate = `${day}.${month}.${year}`;
 
         setEntries((prev) => {
-            const existingIndex = prev.findIndex((e) => e.date === normalized);
+            const existingIndex = prev.findIndex((e) => e.date === dateStr);
 
             if (existingIndex !== -1) {
-                // Обновляем существующую запись
                 const updated = [...prev];
                 const newDistance = updated[existingIndex].distance + distance;
                 updated[existingIndex] = {
@@ -45,55 +38,42 @@ const App = () => {
                 };
                 return updated;
             } else {
-                // Добавляем новую запись
                 const newEntry = {
-                    date: normalized,
-                    displayDate: dateStr,
+                    date: dateStr,
+                    displayDate: displayDate,
                     distance: Math.round(distance * 10) / 10,
                 };
                 const combined = [...prev, newEntry];
-                // Сортировка по дате (новые сверху)
-                combined.sort((a, b) => {
-                    if (a.date > b.date) return -1;
-                    if (a.date < b.date) return 1;
-                    return 0;
-                });
+                combined.sort((a, b) => (a.date > b.date ? -1 : a.date < b.date ? 1 : 0));
                 return combined;
             }
         });
 
-        // Если был режим редактирования, сбрасываем
         if (editingDate) setEditingDate(null);
     };
 
-    // Удаление записи по дате (нормализованной)
     const deleteEntry = (normalizedDate) => {
         setEntries((prev) => prev.filter((e) => e.date !== normalizedDate));
         if (editingDate === normalizedDate) setEditingDate(null);
     };
 
-    // Начать редактирование: передаём данные в форму
     const startEditing = (normalizedDate) => {
         setEditingDate(normalizedDate);
     };
 
-    // Отмена редактирования
     const cancelEditing = () => {
         setEditingDate(null);
     };
 
-    // Найти запись для редактирования
-    const getEditingEntry = () => {
-        if (!editingDate) return null;
-        return entries.find((e) => e.date === editingDate) || null;
-    };
-
-    const editingEntry = getEditingEntry();
+    const editingEntry = editingDate
+        ? entries.find((e) => e.date === editingDate) || null
+        : null;
 
     return (
         <div className="container">
             <div className="form-container">
                 <TrainingForm
+                    key={editingDate || 'new'}
                     onSubmit={addOrUpdateEntry}
                     onCancel={cancelEditing}
                     editingEntry={editingEntry}
