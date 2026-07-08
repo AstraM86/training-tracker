@@ -17,6 +17,7 @@ const loadEntries = () => {
 const App = () => {
     const [entries, setEntries] = useState(loadEntries);
     const [editingDate, setEditingDate] = useState(null);
+    const [formKey, setFormKey] = useState(0);
 
     useEffect(() => {
         localStorage.setItem('trainingEntries', JSON.stringify(entries));
@@ -49,12 +50,16 @@ const App = () => {
             }
         });
 
-        if (editingDate) setEditingDate(null);
+        setEditingDate(null);
+        setFormKey((prev) => prev + 1);
     };
 
     const deleteEntry = (normalizedDate) => {
         setEntries((prev) => prev.filter((e) => e.date !== normalizedDate));
-        if (editingDate === normalizedDate) setEditingDate(null);
+        if (editingDate === normalizedDate) {
+            setEditingDate(null);
+            setFormKey((prev) => prev + 1);
+        }
     };
 
     const startEditing = (normalizedDate) => {
@@ -63,6 +68,7 @@ const App = () => {
 
     const cancelEditing = () => {
         setEditingDate(null);
+        setFormKey((prev) => prev + 1);
     };
 
     const editingEntry = editingDate
@@ -73,7 +79,7 @@ const App = () => {
         <div className="container">
             <div className="form-container">
                 <TrainingForm
-                    key={editingDate || 'new'}
+                    key={editingDate || formKey}
                     onSubmit={addOrUpdateEntry}
                     onCancel={cancelEditing}
                     editingEntry={editingEntry}

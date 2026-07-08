@@ -54,31 +54,32 @@ body {
 }
 
 .form-group input:focus {
-    border-color: #4caf50;
+    border-color: #477317;
 }
 
 .submit-btn {
     padding: 12px 24px;
-    background-color: #f0f0f0;
-    border: 2px solid #ddd;
+    background-color: #9bd955;
+    border: 2px solid #aad57c;
     border-radius: 4px;
     cursor: pointer;
     font-size: 14px;
     font-weight: bold;
     transition: all 0.2s;
     min-width: 80px;
-    margin-top: 0;
     height: 46px;
+    color: white;
 }
 
 .submit-btn:hover {
-    background-color: #e0e0e0;
-    border-color: #ccc;
+    background-color: #add97e;
+    border-color: #8ab069;
 }
 
 .submit-btn--cancel {
     background-color: #ffe6e6;
     border-color: #ffcdd2;
+    color: #333;
 }
 
 .submit-btn--cancel:hover {
@@ -95,7 +96,7 @@ body {
 
 .table-header {
     display: flex;
-    background-color: #f8f8f8;
+    background-color: #d7f1b9;
     border-bottom: 1px solid #ddd;
     font-weight: bold;
     padding: 15px 20px;
